@@ -1,26 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalDependencies": [".env"],
   "tasks": {
-    "start:dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "build:web": {
-      "env": ["NEXT_PUBLIC_API_URL", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "build:api": {
-      "env": [".env*"],
+    "api#build": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "lint": {
@@ -28,6 +20,16 @@
     },
     "test": {
       "dependsOn": ["build"]
+    },
+    "start:dev": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
     }
   }
 }
