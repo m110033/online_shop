@@ -10,7 +10,6 @@ import { LinePayModule } from './line-pay/line-pay.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../../.env',
       load: [configuration],
     }),
     LineBotModule,

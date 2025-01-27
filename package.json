@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "turbo start",
-    "start:dev": "turbo start:dev",
-    "build": "turbo build",
-    "build:web": "turbo build --filter=web",
-    "build:api": "turbo build --filter=api",
+    "start": "dotenv -- turbo run start --env-mode=loose",
+    "start:dev": "dotenv -- turbo run start:dev",
+    "build": "dotenv -- turbo run build --env-mode=loose",
+    "build:web": "dotenv -- turbo run web#build",
+    "build:api": "dotenv -- turbo run api#build",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
@@ -24,5 +24,8 @@
   "engines": {
     "node": ">=20.x",
     "npm": ">=9.x"
+  },
+  "dependencies": {
+    "dotenv-cli": "^8.0.0"
   }
 }
