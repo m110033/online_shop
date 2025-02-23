@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LineBotModule } from './line-bot/line-bot.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
-import { LinePayModule } from './line-pay/line-pay.module';
+import { FirebaseService } from './firebase/firebase.service';
+// import { FirebaseModule } from './firebase/firebase.module';
+import { QRCodeModule } from './qrcode/qrcode.module';
 
 @Module({
   imports: [
@@ -12,10 +13,11 @@ import { LinePayModule } from './line-pay/line-pay.module';
       isGlobal: true,
       load: [configuration],
     }),
-    LineBotModule,
-    LinePayModule,
+    // LineBotModule,
+    // LinePayModule,
+    QRCodeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, FirebaseService],
 })
 export class AppModule {}

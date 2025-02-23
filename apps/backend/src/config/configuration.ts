@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export default () => {
   if (
     !process.env.LINE_CHANNEL_SECRET ||
@@ -9,6 +10,7 @@ export default () => {
   return {
     port: parseInt(process.env.PORT || '3000', 10) || 3000,
     hostUrl: process.env.HOST_URL || '',
+    domain: process.env.DOMAIN || '',
     lineBot: {
       secret: process.env.LINE_CHANNEL_SECRET || '',
       accessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
@@ -18,6 +20,13 @@ export default () => {
       channelId: process.env.LINE_PAY_CHANNEL_ID || '',
       channelSecret: process.env.LINE_PAY_CHANNEL_SECRET || '',
       url: process.env.LINE_PAY_URL || '',
+    },
+    firebase: {
+      serviceKey: JSON.parse(
+        Buffer.from(process.env.FIREBASE_SERVICE_KEY || '', 'base64').toString(
+          'utf-8',
+        ),
+      ),
     },
   };
 };
