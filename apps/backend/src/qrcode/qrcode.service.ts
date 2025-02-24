@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
 import * as QRCode from 'qrcode';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { QRCodeEnum } from './enums/qrcode.enum';
+import { QRCodeStatus } from './interfaces/qrcode-status.interface';
 
 @Injectable()
 export class QRCodeService {
@@ -18,21 +20,66 @@ export class QRCodeService {
     this.collection = this.firebase.getFirestore().collection('qrcodes');
   }
 
-  async generateQRCode(): Promise<string> {
-    const randomCode = this.generateRandomCode();
-    const domain = this.configService.get<string>('domain');
-    const qrCodeUrl = `${domain}/qrcode/redeem?code=${randomCode}`;
-    const qrCodeDataUrl: string = await QRCode.toDataURL(qrCodeUrl);
+  async getQRCodeList(redeemed?: boolean): Promise<QRCodeStatus[]> {
+    let snapshot: admin.firestore.QuerySnapshot;
 
-    await this.collection.doc(randomCode).set({
-      redeemed: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    if (typeof redeemed !== 'undefined') {
+      snapshot = await this.collection.where('redeemed', '==', redeemed).get();
+    } else {
+      snapshot = await this.collection.get();
+    }
 
-    return qrCodeDataUrl;
+    const qrcodes = snapshot.docs.map((s) => ({
+      id: s.id,
+      redeemed: s.data().redeemed,
+    }));
+
+    return qrcodes;
   }
 
-  // 檢查 QR Code 是否已兌換過
+  async generateQRcodes(length: number): Promise<boolean> {
+    const qrCodesDataUrls: string[] = [];
+    const domain = this.configService.get<string>('domain');
+
+    const l = length || 1;
+
+    for (let i = 0; i < l; i++) {
+      const randomCode = this.generateRandomCode();
+      const qrCodeUrl = `${domain}/qrcode/redeem?code=${randomCode}`;
+
+      const qrCodeDataUrl: string = await QRCode.toDataURL(qrCodeUrl);
+      qrCodesDataUrls.push(qrCodeDataUrl);
+
+      // Save the QR Code to Firebase
+      await this.collection.doc(randomCode).set({
+        redeemed: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    return true;
+  }
+
+  async checkQRCode(code: string): Promise<QRCodeEnum> {
+    let status = QRCodeEnum.NONE;
+
+    const qrCodeDoc = await this.collection.doc(code).get();
+
+    if (!qrCodeDoc.exists) {
+      return status;
+    }
+
+    const qrCodeData = qrCodeDoc.data();
+
+    if (qrCodeData?.redeemed) {
+      status = QRCodeEnum.REDEEMED;
+    } else {
+      status = QRCodeEnum.AVAILABLE;
+    }
+
+    return status;
+  }
+
   async redeemQRCode(code: string): Promise<boolean> {
     const qrCodeDoc = await this.collection.doc(code).get();
 

@@ -9,8 +9,10 @@ export default () => {
 
   return {
     port: parseInt(process.env.PORT || '3000', 10) || 3000,
-    hostUrl: process.env.HOST_URL || '',
     domain: process.env.DOMAIN || '',
+    frontend: {
+      url: process.env.FRONTEND_URL || 'http://localhost:3000',
+    },
     lineBot: {
       secret: process.env.LINE_CHANNEL_SECRET || '',
       accessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
