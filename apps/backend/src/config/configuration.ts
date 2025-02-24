@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export default () => {
-  if (
-    !process.env.LINE_CHANNEL_SECRET ||
-    !process.env.LINE_CHANNEL_ACCESS_TOKEN
-  ) {
-    throw new Error('LINE bot credentials are missing!');
-  }
+  // if (
+  //   !process.env.LINE_CHANNEL_SECRET ||
+  //   !process.env.LINE_CHANNEL_ACCESS_TOKEN
+  // ) {
+  //   throw new Error('LINE bot credentials are missing!');
+  // }
 
   return {
     port: parseInt(process.env.PORT || '3000', 10) || 3000,
